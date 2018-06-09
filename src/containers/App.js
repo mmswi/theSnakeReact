@@ -24,7 +24,7 @@ class Board extends React.Component {
             rows.push(<div className="board-row" key={i + 'board-row'}>{oneRow}</div>)
         }
         return (
-            <div>
+            <div className="board">
                 {rows}
             </div>
         );
@@ -35,7 +35,7 @@ class Board extends React.Component {
     renderSquare(i, key) {
         return (
             <Square
-                hexColor={this.props.drawn[i] ? this.props.hexColor : '#ffffff'}
+                hexColor={this.props.drawn[i] ? this.props.hexColor : '#afada8'}
                 key={key}
                 value={i}
             />
@@ -77,8 +77,11 @@ export default class App extends React.Component {
         let currentDrawing = this.state.drawing.slice()
         currentDrawing = currentDrawing.fill(null, 0, 49)
         this.setState({
-            drawing: currentDrawing
+            drawing: currentDrawing,
+            isDrawn: false
         })
+        // disabling the button to prevent double click
+        this.refs.drawBtn.setAttribute("disabled", "disabled");
         // the start of the snake drawing is random
         const startIndex = getRandomInt(0, 48)
         let isSnakeAlive = true
@@ -129,7 +132,7 @@ export default class App extends React.Component {
             for (var i=0; i < snakeArray.length; i++) {
                 (function (i) {
                     // arrow function binds the this to the this in call, else use .bind(this) on the anon function
-                    const timeout = setTimeout(() => {
+                    setTimeout(() => {
                         // setting the state one cell at a time
                         const theMove = snakeArray[i]
                         currentDrawing[theMove] = true;
@@ -138,6 +141,11 @@ export default class App extends React.Component {
                                 ...prevState,
                                 drawing: currentDrawing
                             })
+                        if(snakeArray.length-1 === i) {
+                            this.setState({isDrawn: true})
+                            // making the button clickable again
+                            this.refs.drawBtn.removeAttribute("disabled");
+                        }
                     }, time*i)
                 }).call(this, i)
 
@@ -157,19 +165,23 @@ export default class App extends React.Component {
     }
 
     render() {
-        const btnText = this.state.isDrawn ? 'Redraw' : 'Draw'
+        const btnText = this.state.isDrawn ? 'Restart' : 'Start'
         return (
             <div className="app disp-flex">
-                <div className="app-header disp-flex">
-                    <div className="logo">LOGO</div>
-                    <div className="config">
-                        <div>
-                            <button onClick={() => this.openModal()}>Config {this.props.seconds}</button>
+                <div className="disp-flex row-center">
+                    <div className="app-header-wrapper disp-flex">
+                        <div className="logo">LOGO</div>
+                        <div className="config">
+                            <div>
+                                <button onClick={() => this.openModal()}>Config {this.props.seconds}</button>
+                            </div>                        
                         </div>
-                        
                     </div>
                 </div>
                 <div>
+                <div className="draw-btn-container disp-flex row-center">
+                        <button ref="drawBtn" className="draw-btn" onClick={() => this.drawSnake()}>{btnText}</button>
+                    </div>
                     <div className="app-board disp-flex">
                         <Board drawn={this.state.drawing}
                                 hexColor={this.state.hexColor}
@@ -182,9 +194,6 @@ export default class App extends React.Component {
                                 speed={this.state.drawTime}
                                 hexColor={this.state.hexColor}
                         />
-                    </div>
-                    <div className="draw-btn-container disp-flex row-center">
-                        <button onClick={() => this.drawSnake()}>{btnText}</button>
                     </div>
                 </div>
             </div>

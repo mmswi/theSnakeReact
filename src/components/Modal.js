@@ -42,7 +42,7 @@ export default class Modal extends React.Component {
             <div className={`modal-container display-flex ${this.props.showModal ? '':'hide'} `}>
                 <div className="modal-header">
                     <h2>Config</h2>
-                    <button onClick={this.props.closeModal}>x</button>
+                    <button className="close-btn" onClick={this.props.closeModal}>x</button>
                 </div>
                 <div className="modal-body">
                     <form name="configForm">
