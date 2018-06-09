@@ -1,0 +1,77 @@
+body {
+    font: 14px "Century Gothic", Futura, sans-serif;
+    margin: 20px;
+}
+
+ol, ul {
+    padding-left: 30px;
+}
+
+.board-row:after {
+    clear: both;
+    content: "";
+    display: table;
+}
+
+.status {
+    margin-bottom: 10px;
+}
+
+.square {
+    border: 1px solid #999;
+    float: left;
+    font-size: 24px;
+    font-weight: bold;
+    line-height: 34px;
+    height: 50px;
+    margin-right: -1px;
+    margin-top: -1px;
+    padding: 0;
+    text-align: center;
+    width: 50px;
+}
+
+.square:focus {
+    outline: none;
+}
+
+.square.highlight {
+    color: gold;
+}
+
+.kbd-navigation .square:focus {
+    background: #ddd;
+}
+
+.app {
+    flex-direction: column;
+}
+
+.app-header {
+    justify-content: space-between;
+}
+
+.app-board {
+    justify-content: center;
+}
+
+.row-center {
+    justify-content: center;
+}
+
+.disp-flex {
+    display: flex;
+}
+
+.bolded {
+    font-weight:bold;
+}
+
+.modal-container {
+    max-width: 300px;
+    flex-direction: column;
+}
+
+.modal-container.hide {
+    display: none;
+}
