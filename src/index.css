@@ -75,3 +75,14 @@ ol, ul {
 .modal-container.hide {
     display: none;
 }
+
+.error {
+    color: red;
+    font-weight: bold;
+}
+.error-message {
+    display: none;
+}
+.error .error-message {
+    display: block;
+}
