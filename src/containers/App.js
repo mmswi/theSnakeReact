@@ -5,7 +5,7 @@ import Modal from '../components/Modal';
 function Square(props) {
     return (
         <div className='square' style={{backgroundColor: props.hexColor}}>
-        {props.value}
+        {/* {props.value} */}
         </div>
     );
 }
@@ -53,7 +53,7 @@ export default class App extends React.Component {
             drawing: Array(49).fill(null),
             isDrawn: false,
             showModal: false,
-            drawTime: 2,
+            drawTime: 3,
             hexColor: '#f4424b'
         }
         this.closeModal = this.closeModal.bind(this)
@@ -97,26 +97,52 @@ export default class App extends React.Component {
         const leftWall = generateDeadZoneLeft(7)
         // drawing the snake while it's still alive
         while (isSnakeAlive) {
-            const move = drawSnakeCell(lastMove)
+            let move = drawSnakeCell(lastMove)
             // checkCell(move, historySnake, rightWall, leftWall)
-            const moveStatus = checkCell(move, snakeArray, rightWall, leftWall)
-            if (moveStatus === 'dead') {
+            let moveStatus = checkCell(move, snakeArray, rightWall, leftWall)
+            if (moveStatus === 'retry') {
+                // if the snake hits itself, try to draw to anothe path
+                move = drawSnakeCell(lastMove)
+                moveStatus = checkCell(move, snakeArray, rightWall, leftWall)
+            } else if (moveStatus === 'dead') {
                 isSnakeAlive = false;
-                this.setState({
-                    isDrawn: true
-                })
+                // this.setState({
+                //     isDrawn: true
+                // })
             } else {
                 lastMove = move.pos
                 snakeArray.push(lastMove)
-                currentDrawing[lastMove] = true;
-                const prevState = this.state
-                // updating the array sent to the view
-                this.setState({
-                    ...prevState,
-                    drawing: currentDrawing
-                })
+                // currentDrawing[lastMove] = true;
+                // const prevState = this.state
+                // // updating the array sent to the view
+                // this.setState({
+                //     ...prevState,
+                //     drawing: currentDrawing
+                // })
             }
-        } 
+        }
+
+        if(!isSnakeAlive) {
+            // calculating the time for each move, to put in setTimeout
+            const time = this.state.drawTime*1000 / snakeArray.length
+
+            for (var i=0; i < snakeArray.length; i++) {
+                (function (i) {
+                    // arrow function binds the this to the this in call, else use .bind(this) on the anon function
+                    const timeout = setTimeout(() => {
+                        // setting the state one cell at a time
+                        const theMove = snakeArray[i]
+                        currentDrawing[theMove] = true;
+                        const prevState = this.state  
+                        this.setState({
+                                ...prevState,
+                                drawing: currentDrawing
+                            })
+                    }, time*i)
+                }).call(this, i)
+
+            }   
+        }
     }
 
     // this will be called from the modal component with passed data
@@ -224,10 +250,10 @@ _____________________
 */
 
 function checkCell(move, historySnake, rightWall, leftWall) {
-    /* // checking if the snake went into itself - commented out since it does this often
-    if(historySnake.includes(move.pos)) {        
-        return 'dead'
-    } else {*/
+    // checking if the snake went into itself - commented out since it does this often
+    if(historySnake.includes(move.pos)) {  
+        return 'retry'
+    } else {
         // checking if the snake went into the walls (aka, deadzones)
         switch(move.dir) {
             case 'up':
@@ -239,9 +265,9 @@ function checkCell(move, historySnake, rightWall, leftWall) {
             case 'left':
                 return leftWall.includes(move.pos) ? 'dead' : move.pos
             default:
-                return 'dead'
+                return 'retry'
         }
-    // }    
+    }    
 }
 
 /**
